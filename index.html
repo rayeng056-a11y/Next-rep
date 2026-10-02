@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXTREP.TN – Fuel Your Next Rep</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0B0B0B;
+    --red: #FF2D2D;
+    --red-dark: #CC1A1A;
+    --white: #FFFFFF;
+    --gold: #D4AF37;
+    --gold-light: #F0D060;
+    --grey: #141414;
+    --grey2: #2A2A2A;
+    --text-muted: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'Montserrat', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NOISE GRAIN */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 9999;
+    pointer-events: none;
+    opacity: .025;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 998;
+    background: rgba(11,11,11,.94);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,45,45,.18);
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    animation: slideDown .7s ease both;
+  }
+  @keyframes slideDown { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.9rem; letter-spacing: 3px;
+  }
+  .nav-logo span { color: var(--red); }
+
+  .nav-cta {
+    background: var(--red); color: var(--white);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem; letter-spacing: 2px;
+    padding: 10px 24px; border-radius: 4px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: all .2s;
+    box-shadow: 0 0 18px rgba(255,45,45,.4);
+  }
+  .nav-cta:hover { background: var(--red-dark); transform: scale(1.04); box-shadow: 0 0 32px rgba(255,45,45,.6); }
+
+  /* ── COUNTDOWN ── */
+  .countdown-bar {
+    margin-top: 64px;
+    background: var(--red); padding: 13px 24px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .countdown-bar::before {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(90deg,transparent,transparent 22px,rgba(0,0,0,.07) 22px,rgba(0,0,0,.07) 23px);
+  }
+  .cd-inner {
+    display: flex; align-items: center; justify-content: center;
+    gap: 20px; flex-wrap: wrap; position: relative; z-index: 1;
+  }
+  .cd-label { font-family: 'Bebas Neue',sans-serif; font-size: 1rem; letter-spacing: 3px; }
+  .timer { display: flex; gap: 8px; align-items: center; }
+  .tu {
+    background: rgba(0,0,0,.28); border-radius: 5px;
+    padding: 4px 11px; text-align: center; min-width: 46px;
+  }
+  .tn { font-family: 'Bebas Neue',sans-serif; font-size: 1.8rem; line-height: 1; display: block; }
+  .tl { font-size: .48rem; letter-spacing: 2px; font-weight: 700; text-transform: uppercase; opacity: .75; }
+  .tsep { font-family: 'Bebas Neue',sans-serif; font-size: 1.8rem; opacity: .4; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh; padding: 60px 24px 80px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 20%, rgba(255,45,45,.11) 0%, transparent 68%),
+      radial-gradient(ellipse 50% 40% at 85% 85%, rgba(212,175,55,.06) 0%, transparent 55%),
+      linear-gradient(180deg,#0c0c0c 0%,#111 60%,#0B0B0B 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,45,45,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,45,45,.035) 1px, transparent 1px);
+    background-size: 58px 58px;
+  }
+  .hero-content { position: relative; z-index: 2; max-width: 700px; }
+
+  .badge-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,45,45,.12); border: 1px solid rgba(255,45,45,.4);
+    color: var(--red); font-size: .68rem; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 7px 18px; border-radius: 100px; margin-bottom: 28px;
+    animation: fadeUp .9s .15s both;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue',sans-serif;
+    font-size: clamp(3.8rem,14vw,7.5rem);
+    line-height: .92; letter-spacing: 5px;
+    animation: fadeUp .9s .25s both;
+  }
+  .hero h1 .r { color: var(--red); }
+
+  .hero-sub {
+    font-size: clamp(.78rem,2.2vw,.95rem); font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold); margin: 18px 0 40px;
+    animation: fadeUp .9s .35s both;
+  }
+
+  /* Floating jar */
+  .jar-float {
+    width: 300px; height: 300px; margin: 0 auto 40px;
+    position: relative; animation: fadeUp .9s .2s both;
+  }
+  .jar-glow {
+    position: absolute; inset: -30px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,45,45,.28) 0%, transparent 68%);
+    animation: pulseGlow 3s ease-in-out infinite;
+  }
+  @keyframes pulseGlow { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.12);opacity:.6} }
+  .product-img-real {
+    position: relative; z-index: 2;
+    width: 100%; height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 40px rgba(255,45,45,.35)) drop-shadow(0 24px 50px rgba(0,0,0,.8));
+    animation: floatY 4.5s ease-in-out infinite;
+  }
+  @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+
+  /* Price block */
+  .price-box {
+    display: inline-flex; flex-direction: column; align-items: center;
+    background: rgba(255,255,255,.03); border: 1px solid rgba(255,45,45,.28);
+    border-radius: 14px; padding: 22px 46px; margin-bottom: 38px;
+    animation: fadeUp .9s .45s both; position: relative; overflow: hidden;
+  }
+  .price-box::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,transparent,var(--red),transparent);
+  }
+  .old-p { font-family:'Bebas Neue',sans-serif; font-size:1.9rem; color:var(--text-muted); text-decoration:line-through; letter-spacing:3px; }
+  .now-lbl { font-size:.62rem; font-weight:700; letter-spacing:4px; color:var(--red); text-transform:uppercase; margin:2px 0; }
+  .new-p { font-family:'Bebas Neue',sans-serif; font-size:5.5rem; line-height:1; letter-spacing:5px; color:var(--white); }
+  .new-p em { color:var(--red); font-style:normal; }
+  .save-pill { background:var(--red); color:var(--white); font-size:.62rem; font-weight:700; letter-spacing:2px; padding:5px 14px; border-radius:100px; margin-top:9px; }
+
+  /* CTA Buttons */
+  .hero-btns { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; animation:fadeUp .9s .55s both; }
+
+  .btn-red {
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--red); color:var(--white);
+    font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:3px;
+    padding:18px 42px; border-radius:6px; text-decoration:none; border:none; cursor:pointer;
+    transition:all .25s; position:relative; overflow:hidden;
+    box-shadow:0 0 28px rgba(255,45,45,.42),0 4px 20px rgba(0,0,0,.3);
+  }
+  .btn-red::after { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent); transition:left .45s; }
+  .btn-red:hover::after { left:100%; }
+  .btn-red:hover { background:var(--red-dark); transform:translateY(-3px) scale(1.025); box-shadow:0 0 50px rgba(255,45,45,.6),0 8px 30px rgba(0,0,0,.4); }
+
+  .btn-outline {
+    display:inline-flex; align-items:center; gap:10px;
+    background:transparent; color:var(--white);
+    font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:3px;
+    padding:18px 42px; border-radius:6px; text-decoration:none;
+    border:2px solid rgba(255,255,255,.18); cursor:pointer; transition:all .25s;
+  }
+  .btn-outline:hover { border-color:var(--gold); color:var(--gold); transform:translateY(-3px); }
+
+  /* Trust strip */
+  .trust-strip {
+    display:flex; gap:28px; justify-content:center; flex-wrap:wrap;
+    margin-top:44px; position:relative; z-index:2;
+    animation:fadeUp .9s .65s both;
+  }
+  .ti { display:flex; align-items:center; gap:8px; font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); }
+  .ti-icon { color:var(--gold); font-size:1rem; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── DIVIDER ── */
+  .div-line { height:1px; background:linear-gradient(90deg,transparent,rgba(255,45,45,.3),transparent); }
+
+  /* ── SHARED SECTION STYLES ── */
+  section { padding:80px 24px; }
+  .container { max-width:1080px; margin:0 auto; }
+  .stag { display:inline-block; color:var(--red); font-size:.63rem; font-weight:700; letter-spacing:4px; text-transform:uppercase; margin-bottom:12px; }
+  .stag::before{content:'— '} .stag::after{content:' —'}
+  h2.sh {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(2.4rem,7vw,4.5rem); letter-spacing:3px; line-height:1; margin-bottom:16px;
+  }
+  .sd { color:var(--text-muted); font-size:.88rem; line-height:1.72; max-width:560px; }
+
+  /* ── BENEFITS ── */
+  .benefits { background:var(--grey); border-top:1px solid rgba(255,45,45,.08); border-bottom:1px solid rgba(255,45,45,.08); }
+  .ben-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:22px; margin-top:48px; }
+  .ben-card {
+    background:var(--black); border:1px solid rgba(255,255,255,.055);
+    border-radius:12px; padding:32px 24px; position:relative; overflow:hidden;
+    transition:all .3s;
+  }
+  .ben-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,var(--red),var(--gold));
+    transform:scaleX(0); transition:transform .35s; transform-origin:left;
+  }
+  .ben-card:hover::before { transform:scaleX(1); }
+  .ben-card:hover { border-color:rgba(255,45,45,.18); transform:translateY(-7px); box-shadow:0 22px 60px rgba(0,0,0,.42), 0 0 28px rgba(255,45,45,.07); }
+  .ben-num { font-family:'Bebas Neue',sans-serif; font-size:4.2rem; color:rgba(255,255,255,.04); position:absolute; top:14px; right:18px; line-height:1; }
+  .ben-icon { font-size:2.3rem; margin-bottom:20px; display:block; }
+  .ben-card h3 { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:2px; margin-bottom:8px; }
+  .ben-card p { font-size:.82rem; line-height:1.72; color:var(--text-muted); }
+
+  /* ── PRODUCT DETAIL ── */
+  .prod-det { background:var(--black); }
+  .prod-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+  .prod-vis { position:relative; aspect-ratio:1; max-width:400px; }
+  .prod-glow { position:absolute; inset:0; border-radius:20px; background:radial-gradient(circle,rgba(255,45,45,.17) 0%,transparent 70%); animation:pulseGlow 3s ease-in-out infinite; }
+  .prod-inner-img {
+    position:relative; z-index:2; width:100%; height:100%;
+    display:flex; align-items:center; justify-content:center;
+    padding: 20px;
+  }
+  .product-img-detail {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 50px rgba(255,45,45,.3)) drop-shadow(0 30px 60px rgba(0,0,0,.8));
+    transition: transform .4s ease, filter .4s ease;
+  }
+  .product-img-detail:hover {
+    transform: scale(1.04) translateY(-6px);
+    filter: drop-shadow(0 0 70px rgba(255,45,45,.45)) drop-shadow(0 36px 70px rgba(0,0,0,.9));
+  }
+
+  .ptags { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px; }
+  .ptag { background:rgba(255,45,45,.1); border:1px solid rgba(255,45,45,.3); color:var(--red); font-size:.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:6px 14px; border-radius:100px; }
+  .ptag.gold { background:rgba(212,175,55,.1); border-color:rgba(212,175,55,.3); color:var(--gold); }
+
+  .specs { list-style:none; margin:26px 0 32px; }
+  .specs li { display:flex; align-items:center; gap:13px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.045); font-size:.86rem; color:var(--text-muted); }
+  .specs li:last-child { border-bottom:none; }
+  .specs li .ico { color:var(--red); font-size:1.05rem; flex-shrink:0; }
+  .specs li strong { color:var(--white); font-weight:700; }
+
+  /* ── BADGES ── */
+  .badges-sec { background:linear-gradient(180deg,var(--grey) 0%,var(--black) 100%); }
+  .badges-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:18px; margin-top:48px; }
+  .badge-c {
+    background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.065);
+    border-radius:12px; padding:28px 18px; text-align:center;
+    transition:all .3s; position:relative; overflow:hidden;
+  }
+  .badge-c:hover { border-color:rgba(212,175,55,.3); transform:translateY(-5px); box-shadow:0 14px 44px rgba(0,0,0,.32),0 0 22px rgba(212,175,55,.05); }
+  .badge-c::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:0; transition:opacity .3s; }
+  .badge-c:hover::after { opacity:1; }
+  .badge-ico { font-size:2.5rem; margin-bottom:16px; display:block; }
+  .badge-c h4 { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:2px; margin-bottom:8px; }
+  .badge-c p { font-size:.74rem; color:var(--text-muted); line-height:1.62; }
+
+  /* ── DELIVERY ── */
+  .delivery-sec { background:var(--grey); border-top:1px solid rgba(212,175,55,.08); border-bottom:1px solid rgba(212,175,55,.08); }
+  .del-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+  .del-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2rem,6vw,3.6rem); letter-spacing:3px; line-height:1.05; margin-bottom:20px; }
+  .del-title em { color:var(--red); font-style:normal; }
+  .del-steps { list-style:none; }
+  .del-steps li { display:flex; align-items:flex-start; gap:16px; padding:15px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+  .del-steps li:last-child { border-bottom:none; }
+  .step-n { background:var(--red); color:var(--white); font-family:'Bebas Neue',sans-serif; font-size:1rem; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; letter-spacing:1px; }
+  .step-i h4 { font-weight:700; font-size:.88rem; margin-bottom:4px; }
+  .step-i p { font-size:.78rem; color:var(--text-muted); line-height:1.58; }
+  .del-map {
+    background:linear-gradient(145deg,rgba(255,45,45,.04),rgba(212,175,55,.04));
+    border:1px solid rgba(255,255,255,.065); border-radius:18px;
+    padding:50px 32px; text-align:center; position:relative; overflow:hidden;
+  }
+  .del-map::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 11px,rgba(255,45,45,.018) 11px,rgba(255,45,45,.018) 12px); }
+  .map-flag { font-size:5.5rem; display:block; margin-bottom:20px; position:relative; z-index:1; }
+  .map-t { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:3px; position:relative; z-index:1; }
+  .map-s { font-size:.78rem; color:var(--text-muted); margin-top:9px; position:relative; z-index:1; }
+  .del-badges { margin-top:28px; display:flex; flex-direction:column; gap:10px; position:relative; z-index:1; }
+  .del-badge { border-radius:8px; padding:12px 18px; font-size:.78rem; font-weight:700; text-align:left; }
+  .del-badge.r { background:rgba(255,45,45,.1); border:1px solid rgba(255,45,45,.2); color:var(--white); }
+  .del-badge.g { background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.2); color:var(--gold); }
+  .del-badge.w { background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); color:var(--text-muted); }
+
+  /* ── TESTIMONIALS ── */
+  .testi { background:var(--black); }
+  .testi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:22px; margin-top:48px; }
+  .tcard {
+    background:var(--grey); border:1px solid rgba(255,255,255,.055);
+    border-radius:12px; padding:28px; position:relative; transition:all .3s;
+  }
+  .tcard:hover { border-color:rgba(255,45,45,.2); transform:translateY(-5px); box-shadow:0 18px 55px rgba(0,0,0,.32); }
+  .qmark { font-family:'Bebas Neue',sans-serif; font-size:5.5rem; color:rgba(255,45,45,.13); position:absolute; top:10px; right:20px; line-height:1; }
+  .stars { color:var(--gold); font-size:.95rem; margin-bottom:14px; letter-spacing:3px; }
+  .ttext { font-size:.86rem; line-height:1.72; color:#ccc; margin-bottom:20px; font-style:italic; }
+  .tauthor { display:flex; align-items:center; gap:12px; }
+  .tavatar { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--red),var(--red-dark)); display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; flex-shrink:0; }
+  .taname { font-weight:700; font-size:.84rem; }
+  .taloc { font-size:.7rem; color:var(--text-muted); }
+
+  /* ── INSTAGRAM ── */
+  .ig-sec { background:var(--grey); text-align:center; }
+  .ig-handle { display:inline-flex; align-items:center; gap:10px; color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:3px; text-decoration:none; margin-bottom:16px; transition:color .2s; }
+  .ig-handle:hover { color:var(--white); }
+  .ig-stats { display:flex; gap:40px; justify-content:center; flex-wrap:wrap; margin:18px 0 40px; }
+  .ig-stat-n { font-family:'Bebas Neue',sans-serif; font-size:2.3rem; letter-spacing:2px; color:var(--red); display:block; }
+  .ig-stat-l { font-size:.7rem; color:var(--text-muted); letter-spacing:2px; font-weight:700; text-transform:uppercase; }
+  .ig-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; max-width:520px; margin:0 auto; }
+  .ig-post { aspect-ratio:1; background:var(--black); border:1px solid rgba(255,255,255,.065); border-radius:8px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; transition:all .3s; cursor:pointer; }
+  .ig-post:hover { border-color:var(--red); transform:scale(1.05); }
+  .ig-post-bg { width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:5px; }
+  .ig-post-ov { position:absolute; inset:0; background:rgba(255,45,45,.9); display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px; opacity:0; transition:opacity .3s; }
+  .ig-post:hover .ig-post-ov { opacity:1; }
+  .ig-post-ov span { font-size:.72rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+  .ig-ico { font-size:1.9rem; }
+  .ig-txt { font-family:'Bebas Neue',sans-serif; font-size:.58rem; letter-spacing:1px; color:var(--text-muted); }
+
+  /* ── FINAL CTA ── */
+  .final-sec {
+    background:linear-gradient(135deg,#0B0B0B 0%,#1a0404 50%,#0B0B0B 100%);
+    text-align:center; border-top:1px solid rgba(255,45,45,.18); border-bottom:1px solid rgba(255,45,45,.18);
+    position:relative; overflow:hidden;
+  }
+  .final-sec::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 72% 72% at 50% 50%,rgba(255,45,45,.07) 0%,transparent 70%); }
+  .final-inner { position:relative; z-index:1; }
+  .final-sec h2 { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,11vw,6.5rem); letter-spacing:5px; line-height:1; margin-bottom:16px; }
+  .final-sec h2 span { color:var(--red); }
+  .final-sec p { color:var(--text-muted); font-size:.88rem; margin-bottom:36px; max-width:420px; margin-left:auto; margin-right:auto; }
+  .price-callout { background:rgba(255,45,45,.1); border:1px solid rgba(255,45,45,.22); border-radius:14px; padding:22px 36px; display:inline-block; margin-bottom:38px; }
+  .pcl-lbl { font-size:.66rem; letter-spacing:3px; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px; }
+  .pcl-price { font-family:'Bebas Neue',sans-serif; font-size:4.5rem; line-height:1; letter-spacing:5px; }
+  .pcl-price span { color:var(--red); }
+  .pcl-old { font-size:.68rem; color:var(--text-muted); text-decoration:line-through; letter-spacing:2px; }
+  .cta-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+
+  .btn-wa { display:inline-flex; align-items:center; gap:12px; background:#25D366; color:var(--white); font-family:'Bebas Neue',sans-serif; font-size:1.15rem; letter-spacing:3px; padding:18px 40px; border-radius:6px; text-decoration:none; border:none; cursor:pointer; transition:all .25s; box-shadow:0 0 28px rgba(37,211,102,.3),0 4px 20px rgba(0,0,0,.3); }
+  .btn-wa:hover { background:#1da851; transform:translateY(-3px) scale(1.025); box-shadow:0 0 50px rgba(37,211,102,.5),0 8px 30px rgba(0,0,0,.4); }
+
+  /* ── STICKY ── */
+  .sticky { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:997; animation:fadeInUp 1s 2.5s both; opacity:0; }
+  @keyframes fadeInUp { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  .sticky-btn {
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--red); color:var(--white);
+    font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:3px;
+    padding:15px 34px; border-radius:100px; text-decoration:none;
+    border:none; cursor:pointer; white-space:nowrap;
+    box-shadow:0 0 40px rgba(255,45,45,.5),0 8px 32px rgba(0,0,0,.5);
+    animation:pulsate 2.2s ease-in-out infinite;
+    transition:all .25s;
+  }
+  @keyframes pulsate { 0%,100%{box-shadow:0 0 40px rgba(255,45,45,.5),0 8px 32px rgba(0,0,0,.5)} 50%{box-shadow:0 0 64px rgba(255,45,45,.72),0 10px 42px rgba(0,0,0,.6)} }
+  .sticky-btn:hover { background:var(--red-dark); transform:translateY(-2px) scale(1.04); }
+  .sdot { width:8px; height:8px; background:var(--white); border-radius:50%; animation:blink 1.3s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── FOOTER ── */
+  footer { background:var(--black); border-top:1px solid rgba(255,255,255,.055); padding:50px 24px 28px; }
+  .foot-grid { max-width:1080px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr; gap:44px; }
+  .foot-brand h3 { font-family:'Bebas Neue',sans-serif; font-size:2.1rem; letter-spacing:3px; margin-bottom:12px; }
+  .foot-brand h3 span { color:var(--red); }
+  .foot-brand p { font-size:.8rem; color:var(--text-muted); line-height:1.72; max-width:260px; margin-bottom:20px; }
+  .foot-socials { display:flex; gap:12px; }
+  .foot-soc { width:38px; height:38px; background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.07); border-radius:8px; display:flex; align-items:center; justify-content:center; text-decoration:none; color:var(--white); font-size:1rem; transition:all .2s; }
+  .foot-soc:hover { background:var(--red); border-color:var(--red); transform:translateY(-2px); }
+  .foot-col h4 { font-family:'Bebas Neue',sans-serif; font-size:.95rem; letter-spacing:3px; margin-bottom:16px; }
+  .foot-col ul { list-style:none; }
+  .foot-col ul li { margin-bottom:9px; }
+  .foot-col ul li a { font-size:.8rem; color:var(--text-muted); text-decoration:none; transition:color .2s; }
+  .foot-col ul li a:hover { color:var(--red); }
+  .foot-bottom { max-width:1080px; margin:40px auto 0; padding-top:20px; border-top:1px solid rgba(255,255,255,.045); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+  .foot-bottom p { font-size:.72rem; color:#3a3a3a; }
+
+  /* ── SCROLL REVEAL ── */
+  .rev { opacity:0; transform:translateY(40px); transition:opacity .85s ease,transform .85s ease; }
+  .rev.vis { opacity:1; transform:translateY(0); }
+  .rv1{transition-delay:.1s} .rv2{transition-delay:.2s} .rv3{transition-delay:.3s} .rv4{transition-delay:.4s}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:768px){
+    .prod-grid,.del-grid{grid-template-columns:1fr}
+    .prod-vis{max-width:280px;margin:0 auto 40px}
+    .foot-grid{grid-template-columns:1fr}
+    .foot-bottom{flex-direction:column;text-align:center}
+  }
+  @media(max-width:480px){
+    .ben-grid{grid-template-columns:1fr}
+    .badges-grid{grid-template-columns:1fr 1fr}
+    .cta-btns,.hero-btns{flex-direction:column;align-items:center}
+    .price-box{padding:20px 28px}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">NEXT<span>REP</span>.TN</div>
+  <a class="nav-cta" href="https://instagram.com/nextrep.tn" target="_blank">ORDER NOW</a>
+</nav>
+
+<!-- COUNTDOWN -->
+<div class="countdown-bar">
+  <div class="cd-inner">
+    <span class="cd-label">🔥 Limited Stock – Offer Ends In</span>
+    <div class="timer">
+      <div class="tu"><span class="tn" id="hr">08</span><span class="tl">Hours</span></div>
+      <span class="tsep">:</span>
+      <div class="tu"><span class="tn" id="mn">34</span><span class="tl">Mins</span></div>
+      <span class="tsep">:</span>
+      <div class="tu"><span class="tn" id="sc">52</span><span class="tl">Secs</span></div>
+    </div>
+    <span class="cd-label">Only <strong>7 Units Left!</strong></span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="badge-pill">⚡ Tunisia's #1 Premium Supplement Store</div>
+
+    <div class="jar-float">
+      <div class="jar-glow"></div>
+      <img
+        src="https://protein-shop-tunisia.tn/wp-content/uploads/2024/07/GSN-Creatine-Monohydrate-200G.webp"
+        alt="GSN 100% Creatine Monohydrate 200g"
+        class="product-img-real"
+      />
+    </div>
+
+    <h1>FUEL YOUR<br><span class="r">NEXT REP</span></h1>
+    <p class="hero-sub">100% Creatine Monohydrate – Ultra Micronized 200 Mesh</p>
+
+    <div class="price-box">
+      <span class="old-p">60 DT</span>
+      <span class="now-lbl">— Now Only —</span>
+      <div class="new-p">50 <em>DT</em></div>
+      <span class="save-pill">💥 SAVE 10 DT · LIMITED TIME ONLY</span>
+    </div>
+
+    <div class="hero-btns">
+      <a class="btn-red" href="https://wa.me/21625329426" target="_blank">💬 Order on WhatsApp</a>
+      <a class="btn-outline" href="https://instagram.com/nextrep.tn" target="_blank">📸 DM on Instagram</a>
+    </div>
+
+    <div class="trust-strip">
+      <div class="ti"><span class="ti-icon">✅</span> 100% Authentic</div>
+      <div class="ti"><span class="ti-icon">🚀</span> Fast Delivery</div>
+      <div class="ti"><span class="ti-icon">🏆</span> Premium Quality</div>
+      <div class="ti"><span class="ti-icon">💪</span> For Athletes</div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- BENEFITS -->
+<section class="benefits">
+  <div class="container">
+    <div style="text-align:center" class="rev">
+      <span class="stag">Why Creatine</span>
+      <h2 class="sh">UNLOCK YOUR<br><span style="color:var(--red)">FULL POTENTIAL</span></h2>
+      <p class="sd" style="margin:0 auto">Scientifically proven to boost performance, strength, and recovery. Pure. Unflavored. Uncompromised.</p>
+    </div>
+    <div class="ben-grid">
+      <div class="ben-card rev rv1">
+        <div class="ben-num">01</div>
+        <span class="ben-icon">⚡</span>
+        <h3>Strength & Power</h3>
+        <p>Dramatically increases phosphocreatine stores, fueling explosive power output on every single rep.</p>
+      </div>
+      <div class="ben-card rev rv2">
+        <div class="ben-num">02</div>
+        <span class="ben-icon">🔥</span>
+        <h3>Sports Performance</h3>
+        <p>Delays fatigue and enhances endurance so you can train harder, lift heavier, and recover faster between sets.</p>
+      </div>
+      <div class="ben-card rev rv3">
+        <div class="ben-num">03</div>
+        <span class="ben-icon">⚙️</span>
+        <h3>ATP Activation</h3>
+        <p>Directly accelerates ATP regeneration — the primary cellular energy currency — keeping muscles firing at full capacity.</p>
+      </div>
+      <div class="ben-card rev rv4">
+        <div class="ben-num">04</div>
+        <span class="ben-icon">🧬</span>
+        <h3>Ultra Micronized</h3>
+        <p>200 Mesh ultra-fine particles dissolve instantly with no gritty texture. Maximum absorption, zero waste.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- PRODUCT DETAIL -->
+<section class="prod-det">
+  <div class="container">
+    <div class="prod-grid">
+      <div class="prod-vis rev">
+        <div class="prod-glow"></div>
+        <div class="prod-inner-img">
+          <img
+            src="https://protein-shop-tunisia.tn/wp-content/uploads/2024/07/GSN-Creatine-Monohydrate-200G.webp"
+            alt="GSN 100% Creatine Monohydrate 200g"
+            class="product-img-detail"
+          />
+        </div>
+      </div>
+
+      <div class="rev rv2">
+        <div class="ptags">
+          <span class="ptag">Creatine Mono</span>
+          <span class="ptag gold">200 Mesh</span>
+          <span class="ptag">200g</span>
+          <span class="ptag gold">Ultra Pure</span>
+        </div>
+        <span class="stag">Product Details</span>
+        <h2 class="sh">THE PUREST<br><span style="color:var(--gold)">CREATINE</span><br>ON MARKET</h2>
+        <p class="sd">GSN's 100% Creatine Monohydrate is sourced from the highest-grade raw materials. Unflavored for max versatility — stack it with anything.</p>
+        <ul class="specs">
+          <li><span class="ico">🎯</span><div><strong>100% Pure Creatine Monohydrate</strong> — No fillers, no additives</div></li>
+          <li><span class="ico">⚡</span><div><strong>Ultra Micronized 200 Mesh</strong> — Superior solubility & absorption</div></li>
+          <li><span class="ico">🍃</span><div><strong>Unflavored</strong> — Mix with any shake or drink</div></li>
+          <li><span class="ico">📦</span><div><strong>200g per container</strong> — ~40 servings at 5g/day</div></li>
+          <li><span class="ico">🔬</span><div><strong>Lab Tested</strong> — Verified purity & potency</div></li>
+          <li><span class="ico">🏅</span><div><strong>Made for Athletes</strong> — Professional grade formula</div></li>
+        </ul>
+        <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:4rem;letter-spacing:3px;line-height:1">50 <span style="color:var(--red)">DT</span></div>
+            <div style="font-size:.68rem;color:var(--text-muted);letter-spacing:2px;text-decoration:line-through">WAS 60 DT</div>
+          </div>
+          <a class="btn-red" href="https://wa.me/21625329426" target="_blank" style="flex:1;justify-content:center;min-width:150px">💬 Order Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- BADGES -->
+<section class="badges-sec">
+  <div class="container">
+    <div style="text-align:center" class="rev">
+      <span class="stag">Why NextRep.tn</span>
+      <h2 class="sh">YOUR TRUST IS<br><span style="color:var(--gold)">OUR PRIORITY</span></h2>
+    </div>
+    <div class="badges-grid">
+      <div class="badge-c rev rv1"><span class="badge-ico">🛡️</span><h4>100% Authentic</h4><p>Every product sourced directly from verified manufacturers. Zero counterfeits, guaranteed.</p></div>
+      <div class="badge-c rev rv2"><span class="badge-ico">🏆</span><h4>Premium Supplements</h4><p>Only the best formulas selected. Quality over quantity, every single time.</p></div>
+      <div class="badge-c rev rv3"><span class="badge-ico">🚚</span><h4>Fast Delivery</h4><p>Rapid delivery across all of Tunisia. Order today, train tomorrow.</p></div>
+      <div class="badge-c rev rv4"><span class="badge-ico">💪</span><h4>Made for Athletes</h4><p>Built by athletes for athletes. We understand your goals because we share them.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- DELIVERY -->
+<section class="delivery-sec">
+  <div class="container">
+    <div class="del-grid">
+      <div class="rev">
+        <span class="stag">Delivery</span>
+        <div class="del-title">FAST DELIVERY<br><em>ACROSS</em><br>TUNISIA 🇹🇳</div>
+        <p style="color:var(--text-muted);font-size:.84rem;margin-bottom:28px;line-height:1.72">We deliver everywhere in Tunisia. Order via DM or WhatsApp and receive your supplements quickly and safely.</p>
+        <ol class="del-steps">
+          <li><div class="step-n">1</div><div class="step-i"><h4>Place Your Order</h4><p>Send us a DM on Instagram or message us on WhatsApp with your order.</p></div></li>
+          <li><div class="step-n">2</div><div class="step-i"><h4>Confirm & Pay</h4><p>We confirm availability, share payment details, and finalize your order.</p></div></li>
+          <li><div class="step-n">3</div><div class="step-i"><h4>Fast Dispatch</h4><p>Your package is shipped via trusted courier and tracked across Tunisia.</p></div></li>
+          <li><div class="step-n">4</div><div class="step-i"><h4>Receive & Train</h4><p>Package arrives at your door. Unbox, mix, lift. Simple as that. 💪</p></div></li>
+        </ol>
+      </div>
+      <div class="del-map rev rv2">
+        <span class="map-flag">🇹🇳</span>
+        <div class="map-t">WE DELIVER<br>EVERYWHERE</div>
+        <p class="map-s">Tunis · Sfax · Sousse · Monastir · Bizerte · Nabeul<br>&amp; All Cities Across Tunisia</p>
+        <div class="del-badges">
+          <div class="del-badge r">📦 Fast Nationwide Shipping</div>
+          <div class="del-badge g">💰 Cash on Delivery Available</div>
+          <div class="del-badge w">🔒 Secure &amp; Tamper-Proof Packaging</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- TESTIMONIALS -->
+<section class="testi">
+  <div class="container">
+    <div style="text-align:center" class="rev">
+      <span class="stag">Social Proof</span>
+      <h2 class="sh">WHAT ATHLETES<br><span style="color:var(--red)">ARE SAYING</span></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="tcard rev rv1">
+        <div class="qmark">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="ttext">"Ordered the creatine and received it in 2 days. The quality is insane — I'm already seeing results after 2 weeks. NextRep.tn is the real deal!"</p>
+        <div class="tauthor"><div class="tavatar">AM</div><div><div class="taname">Ahmed M.</div><div class="taloc">📍 Tunis — Powerlifter</div></div></div>
+      </div>
+      <div class="tcard rev rv2">
+        <div class="qmark">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="ttext">"Best creatine I've used in Tunisia. Super fine powder, mixes perfectly, no clumping. Fast shipping too! Recommended to my entire gym."</p>
+        <div class="tauthor"><div class="tavatar">YB</div><div><div class="taname">Youssef B.</div><div class="taloc">📍 Sousse — Bodybuilder</div></div></div>
+      </div>
+      <div class="tcard rev rv3">
+        <div class="qmark">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="ttext">"Great communication, genuine product, super fast delivery to Sfax. Gains have been noticeable. This is my go-to supplement store in TN now."</p>
+        <div class="tauthor"><div class="tavatar">SR</div><div><div class="taname">Salim R.</div><div class="taloc">📍 Sfax — CrossFit Athlete</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- INSTAGRAM -->
+<section class="ig-sec">
+  <div class="container">
+    <div class="rev">
+      <span class="stag">Follow Us</span>
+      <h2 class="sh" style="text-align:center">JOIN THE<br><span style="color:var(--red)">NEXTREP</span> COMMUNITY</h2>
+      <a class="ig-handle" href="https://instagram.com/nextrep.tn" target="_blank">📸 @NEXTREP.TN</a>
+      <div class="ig-stats">
+        <div><span class="ig-stat-n">263+</span><span class="ig-stat-l">Followers</span></div>
+        <div><span class="ig-stat-n">14K+</span><span class="ig-stat-l">Monthly Views</span></div>
+        <div><span class="ig-stat-n">100%</span><span class="ig-stat-l">Authentic</span></div>
+      </div>
+      <div class="ig-grid">
+        <div class="ig-post"><div class="ig-post-bg" style="background:linear-gradient(135deg,#1a1a1a,#222)"><div class="ig-ico">💪</div><div class="ig-txt">NEXTREP.TN</div></div><div class="ig-post-ov"><span>📸 View</span></div></div>
+        <div class="ig-post"><div class="ig-post-bg" style="background:linear-gradient(135deg,#1a0505,#111)"><div class="ig-ico">🔴</div><div class="ig-txt">COMING SOON</div></div><div class="ig-post-ov"><span>📸 View</span></div></div>
+        <div class="ig-post"><div class="ig-post-bg" style="background:linear-gradient(135deg,#111,#1a1a0f)"><div class="ig-ico">⚡</div><div class="ig-txt">FUEL YOUR REP</div></div><div class="ig-post-ov"><span>📸 View</span></div></div>
+        <div class="ig-post"><div class="ig-post-bg" style="background:linear-gradient(135deg,#0f0f0f,#1a1500)"><div class="ig-ico">🏆</div><div class="ig-txt">PREMIUM GRADE</div></div><div class="ig-post-ov"><span>📸 View</span></div></div>
+        <div class="ig-post"><div class="ig-post-bg" style="background:linear-gradient(135deg,#0a1a0a,#111)"><div class="ig-ico">🚚</div><div class="ig-txt">FAST DELIVERY</div></div><div class="ig-post-ov"><span>📸 View</span></div></div>
+        <div class="ig-post"><div class="ig-post-bg" style="background:linear-gradient(135deg,#1a0505,#0B0B0B)"><div class="ig-ico">🔥</div><div class="ig-txt">50 DT ONLY</div></div><div class="ig-post-ov"><span>📸 View</span></div></div>
+      </div>
+      <div style="margin-top:34px">
+        <a class="btn-red" href="https://instagram.com/nextrep.tn" target="_blank" style="display:inline-flex">📸 Follow @nextrep.tn</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- FINAL CTA -->
+<section class="final-sec">
+  <div class="container final-inner">
+    <div class="rev">
+      <h2>READY TO<br><span>LEVEL UP?</span></h2>
+      <p>Don't miss out. Limited stock available. Order now and fuel your next rep with Tunisia's most trusted supplement store.</p>
+      <div class="price-callout">
+        <div class="pcl-lbl">Special Price — Limited Time Only</div>
+        <div class="pcl-price">50 <span>DT</span></div>
+        <div class="pcl-old">Regular Price: 60 DT</div>
+      </div>
+      <div class="cta-btns">
+        <a class="btn-wa" href="https://wa.me/21625329426" target="_blank">💬 Order on WhatsApp</a>
+        <a class="btn-red" href="https://instagram.com/nextrep.tn" target="_blank">📸 DM on Instagram</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <h3>NEXT<span>REP</span>.TN</h3>
+      <p>Tunisia's premier fitness supplement store. Premium quality, authentic products, fast nationwide delivery.</p>
+      <div class="foot-socials">
+        <a class="foot-soc" href="https://instagram.com/nextrep.tn" target="_blank">📸</a>
+        <a class="foot-soc" href="https://wa.me/21625329426" target="_blank">💬</a>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Products</h4>
+      <ul>
+        <li><a href="#">Creatine Monohydrate</a></li>
+        <li><a href="#">Whey Protein</a></li>
+        <li><a href="#">Performance Stack</a></li>
+        <li><a href="#">Accessories</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Information</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Delivery Info</a></li>
+        <li><a href="#">Order via DM</a></li>
+        <li><a href="https://instagram.com/nextrep.tn" target="_blank">@nextrep.tn</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 NEXTREP.TN — All rights reserved.</p>
+    <p style="color:#333">⚡ Fuel Your Next Rep</p>
+  </div>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="sticky">
+  <a class="sticky-btn" href="https://wa.me/21625329426" target="_blank">
+    <div class="sdot"></div>💬 ORDER NOW — 50 DT
+  </a>
+</div>
+
+<script>
+// COUNTDOWN
+(function(){
+  const end = new Date(Date.now() + (8*3600 + 34*60 + 52)*1000);
+  function upd(){
+    const d = end - Date.now();
+    if(d<=0) return;
+    const h = Math.floor(d/3600000);
+    const m = Math.floor((d%3600000)/60000);
+    const s = Math.floor((d%60000)/1000);
+    document.getElementById('hr').textContent = String(h).padStart(2,'0');
+    document.getElementById('mn').textContent = String(m).padStart(2,'0');
+    document.getElementById('sc').textContent = String(s).padStart(2,'0');
+  }
+  upd(); setInterval(upd,1000);
+})();
+
+// SCROLL REVEAL
+const revs = document.querySelectorAll('.rev');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis'); });
+}, {threshold:0.1});
+revs.forEach(r => obs.observe(r));
+
+// STICKY VISIBILITY
+const sticky = document.querySelector('.sticky');
+window.addEventListener('scroll', () => {
+  if(window.scrollY > 320){ sticky.style.opacity='1'; sticky.style.pointerEvents='auto'; }
+  else { sticky.style.opacity='0'; sticky.style.pointerEvents='none'; }
+});
+sticky.style.opacity='0'; sticky.style.pointerEvents='none';
+sticky.style.transition='opacity .4s';
+</script>
+</body>
+</html>
